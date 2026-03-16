@@ -232,6 +232,15 @@ php bin/check-coverage.php
 4. Ensure 100% coverage
 5. Submit a pull request
 
+# 💖 Love my work? Support it! 🚀
+
+* 🪙 **BTC**: bc1qntms755swm3nplsjpllvx92u8wdzrvs474a0hr
+* 💎 **ETH**: 0x08E27250c91540911eD27F161572aFA53Ca24C0a
+* ⚡ **TRX**: TVXWaU4ScNV9RBYX5RqFmySuB4zF991QaE
+* 🚀 **LTC**: LN5ApP1Yhk4iU9Bo1tLU8eHX39zDzzyZxB
+* ☕ **Buy me a coffee**: https://buymeacoffee.com/idct
+* 💝 **Sponsor**: https://github.com/sponsors/ideaconnect
+
 ## 📄 License
 
 This project is licensed under the MIT License.

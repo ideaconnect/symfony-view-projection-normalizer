@@ -8,12 +8,11 @@ use IDCT\Mvc\Attribute\DefaultViewProjection;
 use IDCT\Mvc\Model\NormalizableInterface;
 use IDCT\Mvc\Model\ViewProjectionInterface;
 use IDCT\Mvc\Normalizer\DefaultViewProjectionNormalizer;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
-use Symfony\Component\Serializer\Mapping\Loader\AttributeLoader;
 
 /**
  * @covers \IDCT\Mvc\Normalizer\DefaultViewProjectionNormalizer
@@ -46,7 +45,7 @@ class NormalizerIntegrationTest extends TestCase
         $expected = [
             'displayName' => 'John Doe',
             'contactEmail' => 'john@example.com',
-            'adult' => true
+            'adult' => true,
         ];
 
         $this->assertSame($expected, $result);
@@ -61,7 +60,7 @@ class NormalizerIntegrationTest extends TestCase
         $expected = json_encode([
             'displayName' => 'Jane Smith',
             'contactEmail' => 'jane@example.com',
-            'adult' => false
+            'adult' => false,
         ]);
 
         $this->assertSame($expected, $result);
@@ -77,7 +76,7 @@ class NormalizerIntegrationTest extends TestCase
             'name' => 'Laptop',
             'formattedPrice' => '$999.99',
             'available' => true,
-            'category' => 'Electronics'
+            'category' => 'Electronics',
         ];
 
         $this->assertSame($expected, $result);
@@ -85,7 +84,7 @@ class NormalizerIntegrationTest extends TestCase
 }
 
 /**
- * Test user entity for integration testing
+ * Test user entity for integration testing.
  */
 #[DefaultViewProjection(viewProjectionClass: IntegrationTestUserViewProjection::class)]
 class IntegrationTestUser implements NormalizableInterface
@@ -93,7 +92,7 @@ class IntegrationTestUser implements NormalizableInterface
     public function __construct(
         private string $name,
         private string $email,
-        private int $age
+        private int $age,
     ) {
     }
 
@@ -114,7 +113,7 @@ class IntegrationTestUser implements NormalizableInterface
 }
 
 /**
- * Test user view projection for integration testing
+ * Test user view projection for integration testing.
  */
 class IntegrationTestUserViewProjection implements ViewProjectionInterface
 {
@@ -123,7 +122,7 @@ class IntegrationTestUserViewProjection implements ViewProjectionInterface
     public function __construct(NormalizableInterface $source)
     {
         if (!$source instanceof IntegrationTestUser) {
-            throw new \InvalidArgumentException('IntegrationTestUserViewProjection expects an instance of ' . IntegrationTestUser::class . '.');
+            throw new InvalidArgumentException('IntegrationTestUserViewProjection expects an instance of ' . IntegrationTestUser::class . '.');
         }
 
         $this->user = $source;
@@ -146,7 +145,7 @@ class IntegrationTestUserViewProjection implements ViewProjectionInterface
 }
 
 /**
- * Test product entity for integration testing
+ * Test product entity for integration testing.
  */
 #[DefaultViewProjection(viewProjectionClass: IntegrationTestProductViewProjection::class)]
 class IntegrationTestProduct implements NormalizableInterface
@@ -154,7 +153,7 @@ class IntegrationTestProduct implements NormalizableInterface
     public function __construct(
         private string $name,
         private float $price,
-        private bool $inStock
+        private bool $inStock,
     ) {
     }
 
@@ -175,7 +174,7 @@ class IntegrationTestProduct implements NormalizableInterface
 }
 
 /**
- * Test product view projection for integration testing
+ * Test product view projection for integration testing.
  */
 class IntegrationTestProductViewProjection implements ViewProjectionInterface
 {
@@ -184,7 +183,7 @@ class IntegrationTestProductViewProjection implements ViewProjectionInterface
     public function __construct(NormalizableInterface $source)
     {
         if (!$source instanceof IntegrationTestProduct) {
-            throw new \InvalidArgumentException('IntegrationTestProductViewProjection expects an instance of ' . IntegrationTestProduct::class . '.');
+            throw new InvalidArgumentException('IntegrationTestProductViewProjection expects an instance of ' . IntegrationTestProduct::class . '.');
         }
 
         $this->product = $source;

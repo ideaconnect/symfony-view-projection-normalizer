@@ -6,20 +6,20 @@ namespace IDCT\Mvc\Tests\Behat;
 
 use Behat\Behat\Context\Context;
 use IDCT\Mvc\Normalizer\DefaultViewProjectionNormalizer;
-use IDCT\Mvc\Tests\Behat\Fixtures\Person;
 use IDCT\Mvc\Tests\Behat\Fixtures\Company;
+use IDCT\Mvc\Tests\Behat\Fixtures\Person;
 use IDCT\Mvc\Tests\Behat\Fixtures\Team;
 use PHPUnit\Framework\Assert;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
 use Symfony\Component\Serializer\Mapping\Loader\AttributeLoader;
 use Symfony\Component\Serializer\NameConverter\MetadataAwareNameConverter;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 /**
- * Behat context for testing normalization scenarios
+ * Behat context for testing normalization scenarios.
  */
 class NormalizationContext implements Context
 {
@@ -53,7 +53,7 @@ class NormalizationContext implements Context
                 [
                     ObjectNormalizer::ENABLE_MAX_DEPTH => true,
                     ObjectNormalizer::MAX_DEPTH_HANDLER => null,
-                ]
+                ],
             ),
         ];
 
@@ -90,7 +90,7 @@ class NormalizationContext implements Context
         int $year,
         string $firstName,
         string $lastName,
-        int $age
+        int $age,
     ): void {
         $owner = new Person($firstName, $lastName, $age);
         $this->testObject = new Company($companyName, $industry, $owner, $year);
@@ -104,7 +104,7 @@ class NormalizationContext implements Context
         string $department,
         string $leadFirstName,
         string $leadLastName,
-        int $leadAge
+        int $leadAge,
     ): void {
         $teamLead = new Person($leadFirstName, $leadLastName, $leadAge);
         $this->testObject = new Team($teamName, $department, [], $teamLead);
@@ -126,7 +126,7 @@ class NormalizationContext implements Context
             $this->testObject->getName(),
             $this->testObject->getDepartment(),
             $members,
-            $this->testObject->getTeamLead()
+            $this->testObject->getTeamLead(),
         );
     }
 
@@ -176,7 +176,7 @@ class NormalizationContext implements Context
     public function theNestedObjectShouldContainWithValue(string $parentKey, string $childKey, string $value): void
     {
         Assert::assertArrayHasKey($parentKey, $this->normalizedResult, "Parent key '{$parentKey}' not found");
-        Assert::assertIsArray($this->normalizedResult[$parentKey], "Parent value should be an array/object");
+        Assert::assertIsArray($this->normalizedResult[$parentKey], 'Parent value should be an array/object');
         Assert::assertArrayHasKey($childKey, $this->normalizedResult[$parentKey], "Child key '{$childKey}' not found in '{$parentKey}'");
 
         $actualValue = $this->normalizedResult[$parentKey][$childKey];

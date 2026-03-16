@@ -6,10 +6,11 @@ namespace IDCT\Mvc\Tests\Behat\Fixtures;
 
 use IDCT\Mvc\Model\NormalizableInterface;
 use IDCT\Mvc\Model\ViewProjectionInterface;
+use InvalidArgumentException;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 
 /**
- * View projection for Team that shows team info and member collection
+ * View projection for Team that shows team info and member collection.
  */
 class TeamViewProjection implements ViewProjectionInterface
 {
@@ -18,7 +19,7 @@ class TeamViewProjection implements ViewProjectionInterface
     public function __construct(NormalizableInterface $source)
     {
         if (!$source instanceof Team) {
-            throw new \InvalidArgumentException('TeamViewProjection expects an instance of ' . Team::class . '.');
+            throw new InvalidArgumentException('TeamViewProjection expects an instance of ' . Team::class . '.');
         }
 
         $this->team = $source;
@@ -61,7 +62,8 @@ class TeamViewProjection implements ViewProjectionInterface
             return 0.0;
         }
 
-        $totalAge = array_sum(array_map(fn($member) => $member->getAge(), $members));
+        $totalAge = array_sum(array_map(fn ($member) => $member->getAge(), $members));
+
         return round($totalAge / count($members), 1);
     }
 }

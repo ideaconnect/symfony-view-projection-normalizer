@@ -9,7 +9,8 @@ use IDCT\Mvc\Model\ViewProjectionInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Tests for ViewProjectionInterface
+ * Tests for ViewProjectionInterface.
+ *
  * @coversNothing
  */
 class ViewProjectionInterfaceTest extends TestCase
@@ -22,7 +23,7 @@ class ViewProjectionInterfaceTest extends TestCase
     public function testCanBeImplemented(): void
     {
         $source = new class implements NormalizableInterface {};
-        $implementation = new class ($source) implements ViewProjectionInterface {
+        $implementation = new class($source) implements ViewProjectionInterface {
             public function __construct(NormalizableInterface $source)
             {
             }

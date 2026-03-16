@@ -6,10 +6,11 @@ namespace IDCT\Mvc\Tests\Behat\Fixtures;
 
 use IDCT\Mvc\Model\NormalizableInterface;
 use IDCT\Mvc\Model\ViewProjectionInterface;
+use InvalidArgumentException;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 
 /**
- * View projection for Person that combines firstName and lastName into a single name field
+ * View projection for Person that combines firstName and lastName into a single name field.
  */
 class PersonViewProjection implements ViewProjectionInterface
 {
@@ -18,7 +19,7 @@ class PersonViewProjection implements ViewProjectionInterface
     public function __construct(NormalizableInterface $source)
     {
         if (!$source instanceof Person) {
-            throw new \InvalidArgumentException('PersonViewProjection expects an instance of ' . Person::class . '.');
+            throw new InvalidArgumentException('PersonViewProjection expects an instance of ' . Person::class . '.');
         }
 
         $this->person = $source;

@@ -6,10 +6,11 @@ namespace IDCT\Mvc\Tests\Behat\Fixtures;
 
 use IDCT\Mvc\Model\NormalizableInterface;
 use IDCT\Mvc\Model\ViewProjectionInterface;
+use InvalidArgumentException;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 
 /**
- * View projection for Company that shows business info and owner details
+ * View projection for Company that shows business info and owner details.
  */
 class CompanyViewProjection implements ViewProjectionInterface
 {
@@ -18,7 +19,7 @@ class CompanyViewProjection implements ViewProjectionInterface
     public function __construct(NormalizableInterface $source)
     {
         if (!$source instanceof Company) {
-            throw new \InvalidArgumentException('CompanyViewProjection expects an instance of ' . Company::class . '.');
+            throw new InvalidArgumentException('CompanyViewProjection expects an instance of ' . Company::class . '.');
         }
 
         $this->company = $source;

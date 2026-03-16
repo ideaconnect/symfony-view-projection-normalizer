@@ -3,7 +3,7 @@
 namespace IDCT\Mvc\Model;
 
 /**
- * Normalizable Interface
+ * Normalizable Interface.
  *
  * Marker interface for entities or models that can be processed by the DefaultViewProjectionNormalizer.
  * Classes implementing this interface are candidates for automatic view projection conversion
@@ -11,10 +11,7 @@ namespace IDCT\Mvc\Model;
  *
  * This interface serves as a safety mechanism to ensure only intended classes
  * are processed by the view projection normalization system.
- *
- * @package IDCT\Mvc\Model
  */
 interface NormalizableInterface
 {
-
 }

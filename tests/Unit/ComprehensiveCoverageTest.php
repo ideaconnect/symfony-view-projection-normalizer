@@ -8,11 +8,13 @@ use IDCT\Mvc\Attribute\DefaultViewProjection;
 use IDCT\Mvc\Model\NormalizableInterface;
 use IDCT\Mvc\Model\ViewProjectionInterface;
 use IDCT\Mvc\Normalizer\DefaultViewProjectionNormalizer;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
+use stdClass;
 
 /**
- * Comprehensive test for edge cases and complete coverage
+ * Comprehensive test for edge cases and complete coverage.
  *
  * @covers \IDCT\Mvc\Normalizer\DefaultViewProjectionNormalizer
  * @covers \IDCT\Mvc\Attribute\DefaultViewProjection
@@ -43,7 +45,7 @@ class ComprehensiveCoverageTest extends TestCase
             public string $data = 'test';
         };
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('No DefaultViewProjection attribute found on class');
 
         $normalizer->normalize($entityWithoutAttribute);
@@ -56,7 +58,7 @@ class ComprehensiveCoverageTest extends TestCase
         // This should trigger the empty attributes check in normalize method
         $objectWithoutAttribute = new class implements NormalizableInterface {};
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $normalizer->normalize($objectWithoutAttribute);
     }
 
@@ -83,7 +85,7 @@ class ComprehensiveCoverageTest extends TestCase
         // Test all branches of supportsNormalization
 
         // 1. Non-NormalizableInterface object
-        $stdObject = new \stdClass();
+        $stdObject = new stdClass();
         $this->assertFalse($normalizer->supportsNormalization($stdObject));
 
         // 2. NormalizableInterface but no attribute
@@ -152,19 +154,19 @@ class ComprehensiveCoverageTest extends TestCase
 
         // Test class existence validation
         try {
-            /** @phpstan-ignore-next-line Intentional invalid class string for constructor validation coverage. */
+            /* @phpstan-ignore-next-line Intentional invalid class string for constructor validation coverage. */
             new DefaultViewProjection('CompletelyNonExistentClassName123');
             $this->fail('Expected InvalidArgumentException for non-existent class');
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             $this->assertStringContainsString('$viewProjectionClass class provided does not exist.', $e->getMessage());
         }
 
         // Test ViewProjectionInterface implementation validation
         try {
-            /** @phpstan-ignore-next-line Intentional non-projection class for constructor validation coverage. */
-            new DefaultViewProjection(\stdClass::class);
+            /* @phpstan-ignore-next-line Intentional non-projection class for constructor validation coverage. */
+            new DefaultViewProjection(stdClass::class);
             $this->fail('Expected InvalidArgumentException for class not implementing ViewProjectionInterface');
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             $this->assertStringContainsString('ViewProjection class must be an instance of ViewProjectionInterface.', $e->getMessage());
         }
     }
@@ -175,7 +177,7 @@ class TestEntityForCoverage implements NormalizableInterface
 {
     public function __construct(
         public string $name = 'Test Entity Coverage',
-        public int $value = 42
+        public int $value = 42,
     ) {
     }
 }
@@ -187,7 +189,7 @@ class TestViewProjectionForCoverage implements ViewProjectionInterface
     public function __construct(NormalizableInterface $source)
     {
         if (!$source instanceof TestEntityForCoverage) {
-            throw new \InvalidArgumentException('TestViewProjectionForCoverage expects an instance of ' . TestEntityForCoverage::class . '.');
+            throw new InvalidArgumentException('TestViewProjectionForCoverage expects an instance of ' . TestEntityForCoverage::class . '.');
         }
 
         $this->entity = $source;

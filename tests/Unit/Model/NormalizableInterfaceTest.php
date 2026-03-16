@@ -8,7 +8,8 @@ use IDCT\Mvc\Model\NormalizableInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Tests for NormalizableInterface
+ * Tests for NormalizableInterface.
+ *
  * @coversNothing
  */
 class NormalizableInterfaceTest extends TestCase

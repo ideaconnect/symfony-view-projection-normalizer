@@ -2,12 +2,12 @@
 
 namespace IDCT\Mvc\Attribute;
 
-use InvalidArgumentException;
-use IDCT\Mvc\Model\ViewProjectionInterface;
 use Attribute;
+use IDCT\Mvc\Model\ViewProjectionInterface;
+use InvalidArgumentException;
 
 /**
- * Default View Projection Attribute
+ * Default View Projection Attribute.
  *
  * This attribute is used to specify which view projection class should be used
  * when normalizing an entity or model. When applied to a class that implements
@@ -22,8 +22,6 @@ use Attribute;
  *     // ... class implementation
  * }
  * ```
- *
- * @package IDCT\Mvc\Attribute
  */
 #[Attribute]
 class DefaultViewProjection
@@ -31,9 +29,10 @@ class DefaultViewProjection
     /**
      * Constructor for DefaultViewProjection attribute.
      *
-    * Validates that the provided view projection class exists and implements ViewProjectionInterface.
+     * Validates that the provided view projection class exists and implements ViewProjectionInterface.
      *
-    * @param class-string<ViewProjectionInterface> $viewProjectionClass The fully qualified class name of the view projection to use
+     * @param class-string<ViewProjectionInterface> $viewProjectionClass The fully qualified class name of the view projection to use
+     *
      * @throws InvalidArgumentException If the class doesn't exist or doesn't implement ViewProjectionInterface
      */
     public function __construct(protected readonly string $viewProjectionClass)
@@ -45,7 +44,7 @@ class DefaultViewProjection
         $interfaces = class_implements($viewProjectionClass);
 
         if (!isset($interfaces[ViewProjectionInterface::class])) {
-            throw new InvalidArgumentException("ViewProjection class must be an instance of ViewProjectionInterface.");
+            throw new InvalidArgumentException('ViewProjection class must be an instance of ViewProjectionInterface.');
         }
     }
 

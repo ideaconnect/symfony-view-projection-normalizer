@@ -8,7 +8,7 @@ use IDCT\Mvc\Attribute\DefaultViewProjection;
 use IDCT\Mvc\Model\NormalizableInterface;
 
 /**
- * Test entity representing a person with first and last name
+ * Test entity representing a person with first and last name.
  */
 #[DefaultViewProjection(viewProjectionClass: PersonViewProjection::class)]
 class Person implements NormalizableInterface
@@ -16,7 +16,7 @@ class Person implements NormalizableInterface
     public function __construct(
         private string $firstName,
         private string $lastName,
-        private int $age
+        private int $age,
     ) {
     }
 

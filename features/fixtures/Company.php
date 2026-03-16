@@ -8,7 +8,7 @@ use IDCT\Mvc\Attribute\DefaultViewProjection;
 use IDCT\Mvc\Model\NormalizableInterface;
 
 /**
- * Test entity representing a company with an owner (person)
+ * Test entity representing a company with an owner (person).
  */
 #[DefaultViewProjection(viewProjectionClass: CompanyViewProjection::class)]
 class Company implements NormalizableInterface
@@ -17,7 +17,7 @@ class Company implements NormalizableInterface
         private string $name,
         private string $industry,
         private Person $owner,
-        private int $foundedYear
+        private int $foundedYear,
     ) {
     }
 

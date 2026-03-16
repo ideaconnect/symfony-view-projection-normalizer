@@ -8,7 +8,7 @@ use IDCT\Mvc\Attribute\DefaultViewProjection;
 use IDCT\Mvc\Model\NormalizableInterface;
 
 /**
- * Test entity representing a team with multiple members
+ * Test entity representing a team with multiple members.
  */
 #[DefaultViewProjection(viewProjectionClass: TeamViewProjection::class)]
 class Team implements NormalizableInterface
@@ -20,7 +20,7 @@ class Team implements NormalizableInterface
         private string $name,
         private string $department,
         private array $members,
-        private ?Person $teamLead = null
+        private ?Person $teamLead = null,
     ) {
     }
 

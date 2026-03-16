@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace IDCT\Mvc\Tests\Unit\Normalizer;
 
+use Closure;
 use Doctrine\Common\Proxy\Proxy;
 use IDCT\Mvc\Attribute\DefaultViewProjection;
 use IDCT\Mvc\Model\NormalizableInterface;
@@ -12,11 +13,14 @@ use IDCT\Mvc\Normalizer\DefaultViewProjectionNormalizer;
 use InvalidArgumentException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
+use stdClass;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Contracts\Service\ResetInterface;
 
 /**
  * @covers \IDCT\Mvc\Normalizer\DefaultViewProjectionNormalizer
+ *
  * @uses \IDCT\Mvc\Attribute\DefaultViewProjection
  */
 class DefaultViewProjectionNormalizerTest extends TestCase
@@ -87,7 +91,7 @@ class DefaultViewProjectionNormalizerTest extends TestCase
 
     public function testSupportsNormalizationWithNonNormalizableObject(): void
     {
-        $nonNormalizableObject = new \stdClass();
+        $nonNormalizableObject = new stdClass();
 
         $this->assertFalse($this->normalizer->supportsNormalization($nonNormalizableObject));
     }
@@ -143,7 +147,7 @@ class DefaultViewProjectionNormalizerTest extends TestCase
             ->with(
                 $this->isInstanceOf(TestEntityViewProjection::class),
                 'xml',
-                ['custom' => 'context']
+                ['custom' => 'context'],
             )
             ->willReturn($expectedResult);
 
@@ -204,7 +208,7 @@ class DefaultViewProjectionNormalizerTest extends TestCase
      */
     private function getViewProjectionClassMap(): array
     {
-        $reflection = new \ReflectionClass($this->normalizer);
+        $reflection = new ReflectionClass($this->normalizer);
         $property = $reflection->getProperty('viewProjectionClassMap');
 
         return $property->getValue($this->normalizer);
@@ -212,20 +216,20 @@ class DefaultViewProjectionNormalizerTest extends TestCase
 }
 
 /**
- * Test entity for testing purposes
+ * Test entity for testing purposes.
  */
 #[DefaultViewProjection(viewProjectionClass: TestEntityViewProjection::class)]
 class TestEntity implements NormalizableInterface
 {
     public function __construct(
         public string $name = 'Test Entity',
-        public int $id = 1
+        public int $id = 1,
     ) {
     }
 }
 
 /**
- * Test view projection for testing purposes
+ * Test view projection for testing purposes.
  */
 class TestEntityViewProjection implements ViewProjectionInterface
 {
@@ -234,7 +238,7 @@ class TestEntityViewProjection implements ViewProjectionInterface
     public function __construct(NormalizableInterface $source)
     {
         if (!$source instanceof TestEntity) {
-            throw new \InvalidArgumentException('TestEntityViewProjection expects an instance of ' . TestEntity::class . '.');
+            throw new InvalidArgumentException('TestEntityViewProjection expects an instance of ' . TestEntity::class . '.');
         }
 
         $this->entity = $source;
@@ -252,7 +256,7 @@ class TestEntityViewProjection implements ViewProjectionInterface
 }
 
 /**
- * Test proxy class that simulates Doctrine proxy behavior
+ * Test proxy class that simulates Doctrine proxy behavior.
  */
 /**
  * @implements Proxy<TestEntity>
@@ -275,22 +279,22 @@ class TestEntityProxy extends TestEntity implements Proxy
         // Simulate setting initialization state
     }
 
-    public function __setInitializer(?\Closure $initializer = null): void
+    public function __setInitializer(?Closure $initializer = null): void
     {
         // Simulate setting initializer
     }
 
-    public function __getInitializer(): ?\Closure
+    public function __getInitializer(): ?Closure
     {
         return null;
     }
 
-    public function __setCloner(?\Closure $cloner = null): void
+    public function __setCloner(?Closure $cloner = null): void
     {
         // Simulate setting cloner
     }
 
-    public function __getCloner(): ?\Closure
+    public function __getCloner(): ?Closure
     {
         return null;
     }

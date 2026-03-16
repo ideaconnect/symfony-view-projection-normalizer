@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace IDCT\Mvc\Tests\Unit\Model;
 
+use ArrayObject;
 use IDCT\Mvc\Model\CacheableViewProjectionInterface;
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 /**
- * Tests for CacheableViewProjectionInterface
+ * Tests for CacheableViewProjectionInterface.
+ *
  * @coversNothing
  */
 class CacheableViewProjectionInterfaceTest extends TestCase
@@ -21,7 +24,7 @@ class CacheableViewProjectionInterfaceTest extends TestCase
 
     public function testExtendsNormalizerInterface(): void
     {
-        $reflection = new \ReflectionClass(CacheableViewProjectionInterface::class);
+        $reflection = new ReflectionClass(CacheableViewProjectionInterface::class);
         $interfaces = $reflection->getInterfaceNames();
 
         $this->assertContains(NormalizerInterface::class, $interfaces);
@@ -37,15 +40,16 @@ class CacheableViewProjectionInterfaceTest extends TestCase
 
             /**
              * @param array<string, mixed> $context
-             * @return array<string, mixed>|string|int|float|bool|\ArrayObject<int|string, mixed>|null
+             *
+             * @return array<string, mixed>|string|int|float|bool|ArrayObject<int|string, mixed>|null
              */
-            public function normalize(mixed $object, ?string $format = null, array $context = []): array|string|int|float|bool|\ArrayObject|null
+            public function normalize(mixed $object, ?string $format = null, array $context = []): array|string|int|float|bool|ArrayObject|null
             {
-                if ($object instanceof \ArrayObject) {
+                if ($object instanceof ArrayObject) {
                     return $object;
                 }
 
-                if ($object === null) {
+                if (null === $object) {
                     return null;
                 }
 
@@ -85,7 +89,7 @@ class CacheableViewProjectionInterfaceTest extends TestCase
 
     public function testGetCacheKeyMethod(): void
     {
-        $reflection = new \ReflectionClass(CacheableViewProjectionInterface::class);
+        $reflection = new ReflectionClass(CacheableViewProjectionInterface::class);
 
         $this->assertTrue($reflection->hasMethod('getCacheKey'));
 

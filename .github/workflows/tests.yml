@@ -71,6 +71,15 @@ jobs:
         if: matrix.coverage
         run: php bin/check-coverage.php
 
+      - name: Upload coverage to Codecov
+        if: matrix.coverage
+        uses: codecov/codecov-action@v5
+        with:
+          files: coverage/clover.xml
+          flags: php-${{ matrix.php-version }}
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+
       - name: Archive Coverage Report
         if: matrix.coverage
         uses: actions/upload-artifact@v7

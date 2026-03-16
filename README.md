@@ -2,7 +2,7 @@ MVC View Projection Normalizer
 =========================
 
 ![Tests](https://github.com/ideaconnect/symfony-view-projection-normalizer/actions/workflows/tests.yml/badge.svg)
-![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)
+[![codecov](https://codecov.io/gh/ideaconnect/symfony-view-projection-normalizer/graph/badge.svg?token=oh3Z5ab9eS)](https://codecov.io/gh/ideaconnect/symfony-view-projection-normalizer)
 ![Symfony](https://img.shields.io/badge/symfony-7%20%7C%208-blue)
 ![Tests](https://img.shields.io/badge/tests-PHPUnit%20%2B%20Behat-blue)
 

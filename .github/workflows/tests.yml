@@ -15,16 +15,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: ['8.2', '8.3']
+        php-version: ['8.2', '8.5']
         include:
           - php-version: '8.2'
             coverage: true
-          - php-version: '8.3'
+          - php-version: '8.5'
             coverage: false
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -40,7 +40,7 @@ jobs:
           echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: Cache Composer dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -59,13 +59,13 @@ jobs:
       - name: Run PHPUnit Tests
         run: |
           if [ "${{ matrix.coverage }}" = "true" ]; then
-            XDEBUG_MODE=coverage ./vendor/bin/phpunit --coverage-clover coverage/clover.xml --coverage-html coverage/html --coverage-text
+            composer run test:coverage
           else
-            ./vendor/bin/phpunit
+            composer run test:unit
           fi
 
       - name: Run Behat Tests
-        run: ./vendor/bin/behat --format=progress
+        run: composer run test:feature
 
       - name: Verify 100% Code Coverage
         if: matrix.coverage
@@ -73,7 +73,7 @@ jobs:
 
       - name: Archive Coverage Report
         if: matrix.coverage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-report
           path: coverage/html/
@@ -85,7 +85,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -100,7 +100,7 @@ jobs:
           echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: Cache Composer dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -124,7 +124,7 @@ jobs:
       - name: Run PHPStan (if available)
         run: |
           if [ -f "./vendor/bin/phpstan" ]; then
-            ./vendor/bin/phpstan analyse
+            composer run test:static
           else
             echo "PHPStan not installed, skipping static analysis"
           fi

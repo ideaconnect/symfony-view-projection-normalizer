@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace GryfOSS\Mvc\Tests\Unit\Model;
+namespace IDCT\Mvc\Tests\Unit\Model;
 
-use GryfOSS\Mvc\Model\NormalizableInterface;
+use IDCT\Mvc\Model\NormalizableInterface;
 use PHPUnit\Framework\TestCase;
 
 /**

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace GryfOSS\Mvc\Tests\Behat\Fixtures;
+namespace IDCT\Mvc\Tests\Behat\Fixtures;
 
-use GryfOSS\Mvc\Attribute\DefaultViewModel;
-use GryfOSS\Mvc\Model\NormalizableInterface;
+use IDCT\Mvc\Attribute\DefaultViewProjection;
+use IDCT\Mvc\Model\NormalizableInterface;
 
 /**
  * Test entity representing a person with first and last name
  */
-#[DefaultViewModel(viewModelClass: PersonViewModel::class)]
+#[DefaultViewProjection(viewProjectionClass: PersonViewProjection::class)]
 class Person implements NormalizableInterface
 {
     public function __construct(

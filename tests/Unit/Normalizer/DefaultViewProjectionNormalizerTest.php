@@ -2,32 +2,31 @@
 
 declare(strict_types=1);
 
-namespace GryfOSS\Mvc\Tests\Unit\Normalizer;
+namespace IDCT\Mvc\Tests\Unit\Normalizer;
 
 use Doctrine\Common\Proxy\Proxy;
-use GryfOSS\Mvc\Attribute\DefaultViewModel;
-use GryfOSS\Mvc\Model\NormalizableInterface;
-use GryfOSS\Mvc\Model\ViewModelInterface;
-use GryfOSS\Mvc\Normalizer\DefaultViewModelNormalizer;
+use IDCT\Mvc\Attribute\DefaultViewProjection;
+use IDCT\Mvc\Model\NormalizableInterface;
+use IDCT\Mvc\Model\ViewProjectionInterface;
+use IDCT\Mvc\Normalizer\DefaultViewProjectionNormalizer;
 use InvalidArgumentException;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Symfony\Contracts\Service\ResetInterface;
 
 /**
- * @covers \GryfOSS\Mvc\Normalizer\DefaultViewModelNormalizer
- * @uses \GryfOSS\Mvc\Attribute\DefaultViewModel
+ * @covers \IDCT\Mvc\Normalizer\DefaultViewProjectionNormalizer
+ * @uses \IDCT\Mvc\Attribute\DefaultViewProjection
  */
-class DefaultViewModelNormalizerTest extends TestCase
+class DefaultViewProjectionNormalizerTest extends TestCase
 {
-    private DefaultViewModelNormalizer $normalizer;
-    private NormalizerInterface $mockNormalizer;
+    private DefaultViewProjectionNormalizer $normalizer;
 
     protected function setUp(): void
     {
-        $this->normalizer = new DefaultViewModelNormalizer();
-        $this->mockNormalizer = $this->createMock(NormalizerInterface::class);
-        $this->normalizer->setNormalizer($this->mockNormalizer);
+        $this->normalizer = new DefaultViewProjectionNormalizer();
+        $this->normalizer->setNormalizer($this->createStub(NormalizerInterface::class));
     }
 
     public function testNormalizeWithValidObject(): void
@@ -35,10 +34,14 @@ class DefaultViewModelNormalizerTest extends TestCase
         $testEntity = new TestEntity();
         $expectedResult = ['normalized' => 'data'];
 
-        $this->mockNormalizer
+        /** @var NormalizerInterface&MockObject $mockNormalizer */
+        $mockNormalizer = $this->createMock(NormalizerInterface::class);
+        $this->normalizer->setNormalizer($mockNormalizer);
+
+        $mockNormalizer
             ->expects($this->once())
             ->method('normalize')
-            ->with($this->isInstanceOf(TestEntityViewModel::class))
+            ->with($this->isInstanceOf(TestEntityViewProjection::class))
             ->willReturn($expectedResult);
 
         $result = $this->normalizer->normalize($testEntity);
@@ -51,10 +54,14 @@ class DefaultViewModelNormalizerTest extends TestCase
         $testProxy = new TestEntityProxy();
         $expectedResult = ['normalized' => 'proxy_data'];
 
-        $this->mockNormalizer
+        /** @var NormalizerInterface&MockObject $mockNormalizer */
+        $mockNormalizer = $this->createMock(NormalizerInterface::class);
+        $this->normalizer->setNormalizer($mockNormalizer);
+
+        $mockNormalizer
             ->expects($this->once())
             ->method('normalize')
-            ->with($this->isInstanceOf(TestEntityViewModel::class))
+            ->with($this->isInstanceOf(TestEntityViewProjection::class))
             ->willReturn($expectedResult);
 
         $result = $this->normalizer->normalize($testProxy);
@@ -65,7 +72,7 @@ class DefaultViewModelNormalizerTest extends TestCase
     public function testNormalizeWithObjectWithoutAttribute(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('No DefaultViewModel attribute found on class');
+        $this->expectExceptionMessage('No DefaultViewProjection attribute found on class');
 
         $objectWithoutAttribute = new class implements NormalizableInterface {};
         $this->normalizer->normalize($objectWithoutAttribute);
@@ -104,7 +111,7 @@ class DefaultViewModelNormalizerTest extends TestCase
         $result = $this->normalizer->getSupportedTypes('json');
 
         $expected = [
-            NormalizableInterface::class => true
+            NormalizableInterface::class => true,
         ];
 
         $this->assertSame($expected, $result);
@@ -115,7 +122,7 @@ class DefaultViewModelNormalizerTest extends TestCase
         $result = $this->normalizer->getSupportedTypes(null);
 
         $expected = [
-            NormalizableInterface::class => true
+            NormalizableInterface::class => true,
         ];
 
         $this->assertSame($expected, $result);
@@ -126,11 +133,15 @@ class DefaultViewModelNormalizerTest extends TestCase
         $testEntity = new TestEntity();
         $expectedResult = ['normalized' => 'data'];
 
-        $this->mockNormalizer
+        /** @var NormalizerInterface&MockObject $mockNormalizer */
+        $mockNormalizer = $this->createMock(NormalizerInterface::class);
+        $this->normalizer->setNormalizer($mockNormalizer);
+
+        $mockNormalizer
             ->expects($this->once())
             ->method('normalize')
             ->with(
-                $this->isInstanceOf(TestEntityViewModel::class),
+                $this->isInstanceOf(TestEntityViewProjection::class),
                 'xml',
                 ['custom' => 'context']
             )
@@ -149,12 +160,61 @@ class DefaultViewModelNormalizerTest extends TestCase
         $this->assertTrue($this->normalizer->supportsNormalization($testEntity, 'xml'));
         $this->assertTrue($this->normalizer->supportsNormalization($testEntity, null));
     }
+
+    public function testSupportsNormalizationCachesResolvedProjectionClass(): void
+    {
+        $testEntity = new TestEntity();
+
+        $this->assertTrue($this->normalizer->supportsNormalization($testEntity));
+        $this->assertTrue($this->normalizer->supportsNormalization($testEntity));
+
+        $cache = $this->getViewProjectionClassMap();
+
+        $this->assertArrayHasKey(TestEntity::class, $cache);
+        $this->assertSame(TestEntityViewProjection::class, $cache[TestEntity::class]);
+    }
+
+    public function testSupportsNormalizationDoesNotCacheMissingProjectionMetadata(): void
+    {
+        $objectWithoutAttribute = new class implements NormalizableInterface {};
+
+        $this->assertFalse($this->normalizer->supportsNormalization($objectWithoutAttribute));
+        $this->assertFalse($this->normalizer->supportsNormalization($objectWithoutAttribute));
+
+        $this->assertArrayNotHasKey($objectWithoutAttribute::class, $this->getViewProjectionClassMap());
+    }
+
+    public function testImplementsResetInterface(): void
+    {
+        $this->assertInstanceOf(ResetInterface::class, $this->normalizer);
+    }
+
+    public function testResetClearsResolvedProjectionCache(): void
+    {
+        $this->assertTrue($this->normalizer->supportsNormalization(new TestEntity()));
+        $this->assertNotEmpty($this->getViewProjectionClassMap());
+
+        $this->normalizer->reset();
+
+        $this->assertSame([], $this->getViewProjectionClassMap());
+    }
+
+    /**
+     * @return array<class-string, class-string>
+     */
+    private function getViewProjectionClassMap(): array
+    {
+        $reflection = new \ReflectionClass($this->normalizer);
+        $property = $reflection->getProperty('viewProjectionClassMap');
+
+        return $property->getValue($this->normalizer);
+    }
 }
 
 /**
  * Test entity for testing purposes
  */
-#[DefaultViewModel(viewModelClass: TestEntityViewModel::class)]
+#[DefaultViewProjection(viewProjectionClass: TestEntityViewProjection::class)]
 class TestEntity implements NormalizableInterface
 {
     public function __construct(
@@ -165,12 +225,19 @@ class TestEntity implements NormalizableInterface
 }
 
 /**
- * Test view model for testing purposes
+ * Test view projection for testing purposes
  */
-class TestEntityViewModel implements ViewModelInterface
+class TestEntityViewProjection implements ViewProjectionInterface
 {
-    public function __construct(private TestEntity $entity)
+    private TestEntity $entity;
+
+    public function __construct(NormalizableInterface $source)
     {
+        if (!$source instanceof TestEntity) {
+            throw new \InvalidArgumentException('TestEntityViewProjection expects an instance of ' . TestEntity::class . '.');
+        }
+
+        $this->entity = $source;
     }
 
     public function getName(): string
@@ -187,7 +254,10 @@ class TestEntityViewModel implements ViewModelInterface
 /**
  * Test proxy class that simulates Doctrine proxy behavior
  */
-#[DefaultViewModel(viewModelClass: TestEntityViewModel::class)]
+/**
+ * @implements Proxy<TestEntity>
+ */
+#[DefaultViewProjection(viewProjectionClass: TestEntityViewProjection::class)]
 class TestEntityProxy extends TestEntity implements Proxy
 {
     public function __load(): void
@@ -205,7 +275,7 @@ class TestEntityProxy extends TestEntity implements Proxy
         // Simulate setting initialization state
     }
 
-    public function __setInitializer(\Closure $initializer = null): void
+    public function __setInitializer(?\Closure $initializer = null): void
     {
         // Simulate setting initializer
     }
@@ -215,7 +285,7 @@ class TestEntityProxy extends TestEntity implements Proxy
         return null;
     }
 
-    public function __setCloner(\Closure $cloner = null): void
+    public function __setCloner(?\Closure $cloner = null): void
     {
         // Simulate setting cloner
     }

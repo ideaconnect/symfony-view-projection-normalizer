@@ -2,56 +2,56 @@
 
 declare(strict_types=1);
 
-namespace GryfOSS\Mvc\Tests\Unit;
+namespace IDCT\Mvc\Tests\Unit;
 
-use GryfOSS\Mvc\Attribute\DefaultViewModel;
-use GryfOSS\Mvc\Model\NormalizableInterface;
-use GryfOSS\Mvc\Model\ViewModelInterface;
-use GryfOSS\Mvc\Normalizer\DefaultViewModelNormalizer;
+use IDCT\Mvc\Attribute\DefaultViewProjection;
+use IDCT\Mvc\Model\NormalizableInterface;
+use IDCT\Mvc\Model\ViewProjectionInterface;
+use IDCT\Mvc\Normalizer\DefaultViewProjectionNormalizer;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
 /**
  * Comprehensive test for edge cases and complete coverage
  *
- * @covers \GryfOSS\Mvc\Normalizer\DefaultViewModelNormalizer
- * @covers \GryfOSS\Mvc\Attribute\DefaultViewModel
+ * @covers \IDCT\Mvc\Normalizer\DefaultViewProjectionNormalizer
+ * @covers \IDCT\Mvc\Attribute\DefaultViewProjection
  */
 class ComprehensiveCoverageTest extends TestCase
 {
-    public function testDefaultViewModelAttributeWithEdgeCases(): void
+    public function testDefaultViewProjectionAttributeWithEdgeCases(): void
     {
         // Test with fully qualified class name
-        $attribute = new DefaultViewModel(TestViewModelForCoverage::class);
-        $this->assertSame(TestViewModelForCoverage::class, $attribute->getViewModelClass());
+        $attribute = new DefaultViewProjection(TestViewProjectionForCoverage::class);
+        $this->assertSame(TestViewProjectionForCoverage::class, $attribute->getViewProjectionClass());
 
         // Test constructor validation paths are fully exercised
-        $this->assertTrue(class_exists($attribute->getViewModelClass()));
+        $this->assertTrue(class_exists($attribute->getViewProjectionClass()));
 
-        $reflection = new ReflectionClass($attribute->getViewModelClass());
+        $reflection = new ReflectionClass($attribute->getViewProjectionClass());
         $interfaces = $reflection->getInterfaceNames();
-        $this->assertContains(ViewModelInterface::class, $interfaces);
+        $this->assertContains(ViewProjectionInterface::class, $interfaces);
     }
 
     public function testNormalizerWithMissingAttribute(): void
     {
-        $normalizer = new DefaultViewModelNormalizer();
-        $mockNormalizer = $this->createMock(\Symfony\Component\Serializer\Normalizer\NormalizerInterface::class);
-        $normalizer->setNormalizer($mockNormalizer);
+        $normalizer = new DefaultViewProjectionNormalizer();
+        $stubNormalizer = $this->createStub(\Symfony\Component\Serializer\Normalizer\NormalizerInterface::class);
+        $normalizer->setNormalizer($stubNormalizer);
 
         $entityWithoutAttribute = new class implements NormalizableInterface {
             public string $data = 'test';
         };
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('No DefaultViewModel attribute found on class');
+        $this->expectExceptionMessage('No DefaultViewProjection attribute found on class');
 
         $normalizer->normalize($entityWithoutAttribute);
     }
 
     public function testNormalizerWithEmptyAttributesArray(): void
     {
-        $normalizer = new DefaultViewModelNormalizer();
+        $normalizer = new DefaultViewProjectionNormalizer();
 
         // This should trigger the empty attributes check in normalize method
         $objectWithoutAttribute = new class implements NormalizableInterface {};
@@ -62,7 +62,7 @@ class ComprehensiveCoverageTest extends TestCase
 
     public function testGetSupportedTypesMethodCoverage(): void
     {
-        $normalizer = new DefaultViewModelNormalizer();
+        $normalizer = new DefaultViewProjectionNormalizer();
 
         // Test with different format values to ensure complete coverage
         $jsonTypes = $normalizer->getSupportedTypes('json');
@@ -78,7 +78,7 @@ class ComprehensiveCoverageTest extends TestCase
 
     public function testSupportsNormalizationMethodCoverage(): void
     {
-        $normalizer = new DefaultViewModelNormalizer();
+        $normalizer = new DefaultViewProjectionNormalizer();
 
         // Test all branches of supportsNormalization
 
@@ -102,7 +102,7 @@ class ComprehensiveCoverageTest extends TestCase
 
     public function testNormalizeMethodWithDifferentContexts(): void
     {
-        $normalizer = new DefaultViewModelNormalizer();
+        $normalizer = new DefaultViewProjectionNormalizer();
         $mockNormalizer = $this->createMock(\Symfony\Component\Serializer\Normalizer\NormalizerInterface::class);
         $normalizer->setNormalizer($mockNormalizer);
 
@@ -125,7 +125,7 @@ class ComprehensiveCoverageTest extends TestCase
 
     public function testProxyHandlingBranches(): void
     {
-        $normalizer = new DefaultViewModelNormalizer();
+        $normalizer = new DefaultViewProjectionNormalizer();
         $mockNormalizer = $this->createMock(\Symfony\Component\Serializer\Normalizer\NormalizerInterface::class);
         $normalizer->setNormalizer($mockNormalizer);
 
@@ -147,28 +147,30 @@ class ComprehensiveCoverageTest extends TestCase
     public function testAttributeConstructorValidationBranches(): void
     {
         // Test successful construction
-        $validAttribute = new DefaultViewModel(TestViewModelForCoverage::class);
-        $this->assertInstanceOf(DefaultViewModel::class, $validAttribute);
+        $validAttribute = new DefaultViewProjection(TestViewProjectionForCoverage::class);
+        $this->assertInstanceOf(DefaultViewProjection::class, $validAttribute);
 
         // Test class existence validation
         try {
-            new DefaultViewModel('CompletelyNonExistentClassName123');
+            /** @phpstan-ignore-next-line Intentional invalid class string for constructor validation coverage. */
+            new DefaultViewProjection('CompletelyNonExistentClassName123');
             $this->fail('Expected InvalidArgumentException for non-existent class');
         } catch (\InvalidArgumentException $e) {
-            $this->assertStringContainsString('$viewModelClass class provided does not exist.', $e->getMessage());
+            $this->assertStringContainsString('$viewProjectionClass class provided does not exist.', $e->getMessage());
         }
 
-        // Test ViewModelInterface implementation validation
+        // Test ViewProjectionInterface implementation validation
         try {
-            new DefaultViewModel(\stdClass::class);
-            $this->fail('Expected InvalidArgumentException for class not implementing ViewModelInterface');
+            /** @phpstan-ignore-next-line Intentional non-projection class for constructor validation coverage. */
+            new DefaultViewProjection(\stdClass::class);
+            $this->fail('Expected InvalidArgumentException for class not implementing ViewProjectionInterface');
         } catch (\InvalidArgumentException $e) {
-            $this->assertStringContainsString('ViewModel class must be an instance of ViewModelInterface.', $e->getMessage());
+            $this->assertStringContainsString('ViewProjection class must be an instance of ViewProjectionInterface.', $e->getMessage());
         }
     }
 }
 
-#[DefaultViewModel(viewModelClass: TestViewModelForCoverage::class)]
+#[DefaultViewProjection(viewProjectionClass: TestViewProjectionForCoverage::class)]
 class TestEntityForCoverage implements NormalizableInterface
 {
     public function __construct(
@@ -178,10 +180,17 @@ class TestEntityForCoverage implements NormalizableInterface
     }
 }
 
-class TestViewModelForCoverage implements ViewModelInterface
+class TestViewProjectionForCoverage implements ViewProjectionInterface
 {
-    public function __construct(private TestEntityForCoverage $entity)
+    private TestEntityForCoverage $entity;
+
+    public function __construct(NormalizableInterface $source)
     {
+        if (!$source instanceof TestEntityForCoverage) {
+            throw new \InvalidArgumentException('TestViewProjectionForCoverage expects an instance of ' . TestEntityForCoverage::class . '.');
+        }
+
+        $this->entity = $source;
     }
 
     public function getName(): string

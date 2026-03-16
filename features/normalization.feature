@@ -1,10 +1,10 @@
-Feature: View Model Normalization
-  As a developer using the MVC View Model Normalizer
+Feature: View Projection Normalization
+  As a developer using the MVC View Projection Normalizer
   I want to normalize objects with different complexity levels
-  So that I can control the serialization output through view models
+  So that I can control the serialization output through view projections
 
   Background:
-    Given the serializer is properly configured with DefaultViewModelNormalizer
+    Given the serializer is properly configured with DefaultViewProjectionNormalizer
 
   Scenario: Normalize a simple object with combined attributes
     Given I have a person with first name "John" and last name "Doe" aged 30
@@ -32,7 +32,7 @@ Feature: View Model Normalization
     Given I have a company "StartupInc" in "Software" founded in 2020 with owner "Bob" "Wilson" aged 35
     When I normalize the object
     Then the normalized result should contain "companyName" with value "StartupInc"
-    And the normalized result should contain "yearsInBusiness" with value "5"
+    And the normalized result should contain "yearsInBusiness" with value "6"
 
   Scenario: Normalize an object with a collection of nested objects
     Given I have a team "Development Team" in "Engineering" with team lead "Carol" "Brown" aged 40

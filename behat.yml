@@ -4,4 +4,4 @@ default:
             paths:
                 - '%paths.base%/features'
             contexts:
-                - GryfOSS\Mvc\Tests\Behat\NormalizationContext
+                - IDCT\Mvc\Tests\Behat\NormalizationContext

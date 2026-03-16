@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace GryfOSS\Mvc\Tests\Behat;
+namespace IDCT\Mvc\Tests\Behat;
 
 use Behat\Behat\Context\Context;
-use GryfOSS\Mvc\Normalizer\DefaultViewModelNormalizer;
-use GryfOSS\Mvc\Tests\Behat\Fixtures\Person;
-use GryfOSS\Mvc\Tests\Behat\Fixtures\Company;
-use GryfOSS\Mvc\Tests\Behat\Fixtures\Team;
+use IDCT\Mvc\Normalizer\DefaultViewProjectionNormalizer;
+use IDCT\Mvc\Tests\Behat\Fixtures\Person;
+use IDCT\Mvc\Tests\Behat\Fixtures\Company;
+use IDCT\Mvc\Tests\Behat\Fixtures\Team;
 use PHPUnit\Framework\Assert;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -42,7 +42,7 @@ class NormalizationContext implements Context
         $nameConverter = new MetadataAwareNameConverter($classMetadataFactory);
 
         $normalizers = [
-            new DefaultViewModelNormalizer(),
+            new DefaultViewProjectionNormalizer(),
             new ObjectNormalizer(
                 $classMetadataFactory,
                 $nameConverter,
@@ -65,9 +65,9 @@ class NormalizationContext implements Context
     }
 
     /**
-     * @Given the serializer is properly configured with DefaultViewModelNormalizer
+     * @Given the serializer is properly configured with DefaultViewProjectionNormalizer
      */
-    public function theSerializerIsProperlyConfiguredWithDefaultViewModelNormalizer(): void
+    public function theSerializerIsProperlyConfiguredWithDefaultViewProjectionNormalizer(): void
     {
         // This is already done in the constructor, but this step documents it
         Assert::assertInstanceOf(Serializer::class, $this->serializer);

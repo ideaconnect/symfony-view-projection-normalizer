@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace GryfOSS\Mvc\Tests\Integration;
+namespace IDCT\Mvc\Tests\Integration;
 
-use GryfOSS\Mvc\Attribute\DefaultViewModel;
-use GryfOSS\Mvc\Model\NormalizableInterface;
-use GryfOSS\Mvc\Model\ViewModelInterface;
-use GryfOSS\Mvc\Normalizer\DefaultViewModelNormalizer;
+use IDCT\Mvc\Attribute\DefaultViewProjection;
+use IDCT\Mvc\Model\NormalizableInterface;
+use IDCT\Mvc\Model\ViewProjectionInterface;
+use IDCT\Mvc\Normalizer\DefaultViewProjectionNormalizer;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
@@ -16,8 +16,8 @@ use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
 use Symfony\Component\Serializer\Mapping\Loader\AttributeLoader;
 
 /**
- * @covers \GryfOSS\Mvc\Normalizer\DefaultViewModelNormalizer
- * @covers \GryfOSS\Mvc\Attribute\DefaultViewModel
+ * @covers \IDCT\Mvc\Normalizer\DefaultViewProjectionNormalizer
+ * @covers \IDCT\Mvc\Attribute\DefaultViewProjection
  */
 class NormalizerIntegrationTest extends TestCase
 {
@@ -26,7 +26,7 @@ class NormalizerIntegrationTest extends TestCase
     protected function setUp(): void
     {
         $normalizers = [
-            new DefaultViewModelNormalizer(),
+            new DefaultViewProjectionNormalizer(),
             new ObjectNormalizer(),
         ];
 
@@ -87,7 +87,7 @@ class NormalizerIntegrationTest extends TestCase
 /**
  * Test user entity for integration testing
  */
-#[DefaultViewModel(viewModelClass: IntegrationTestUserViewModel::class)]
+#[DefaultViewProjection(viewProjectionClass: IntegrationTestUserViewProjection::class)]
 class IntegrationTestUser implements NormalizableInterface
 {
     public function __construct(
@@ -114,12 +114,19 @@ class IntegrationTestUser implements NormalizableInterface
 }
 
 /**
- * Test user view model for integration testing
+ * Test user view projection for integration testing
  */
-class IntegrationTestUserViewModel implements ViewModelInterface
+class IntegrationTestUserViewProjection implements ViewProjectionInterface
 {
-    public function __construct(private IntegrationTestUser $user)
+    private IntegrationTestUser $user;
+
+    public function __construct(NormalizableInterface $source)
     {
+        if (!$source instanceof IntegrationTestUser) {
+            throw new \InvalidArgumentException('IntegrationTestUserViewProjection expects an instance of ' . IntegrationTestUser::class . '.');
+        }
+
+        $this->user = $source;
     }
 
     public function getDisplayName(): string
@@ -141,7 +148,7 @@ class IntegrationTestUserViewModel implements ViewModelInterface
 /**
  * Test product entity for integration testing
  */
-#[DefaultViewModel(viewModelClass: IntegrationTestProductViewModel::class)]
+#[DefaultViewProjection(viewProjectionClass: IntegrationTestProductViewProjection::class)]
 class IntegrationTestProduct implements NormalizableInterface
 {
     public function __construct(
@@ -168,12 +175,19 @@ class IntegrationTestProduct implements NormalizableInterface
 }
 
 /**
- * Test product view model for integration testing
+ * Test product view projection for integration testing
  */
-class IntegrationTestProductViewModel implements ViewModelInterface
+class IntegrationTestProductViewProjection implements ViewProjectionInterface
 {
-    public function __construct(private IntegrationTestProduct $product)
+    private IntegrationTestProduct $product;
+
+    public function __construct(NormalizableInterface $source)
     {
+        if (!$source instanceof IntegrationTestProduct) {
+            throw new \InvalidArgumentException('IntegrationTestProductViewProjection expects an instance of ' . IntegrationTestProduct::class . '.');
+        }
+
+        $this->product = $source;
     }
 
     public function getName(): string

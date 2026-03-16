@@ -2,18 +2,26 @@
 
 declare(strict_types=1);
 
-namespace GryfOSS\Mvc\Tests\Behat\Fixtures;
+namespace IDCT\Mvc\Tests\Behat\Fixtures;
 
-use GryfOSS\Mvc\Model\ViewModelInterface;
+use IDCT\Mvc\Model\NormalizableInterface;
+use IDCT\Mvc\Model\ViewProjectionInterface;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 
 /**
- * View model for Company that shows business info and owner details
+ * View projection for Company that shows business info and owner details
  */
-class CompanyViewModel implements ViewModelInterface
+class CompanyViewProjection implements ViewProjectionInterface
 {
-    public function __construct(private Company $company)
+    private Company $company;
+
+    public function __construct(NormalizableInterface $source)
     {
+        if (!$source instanceof Company) {
+            throw new \InvalidArgumentException('CompanyViewProjection expects an instance of ' . Company::class . '.');
+        }
+
+        $this->company = $source;
     }
 
     #[SerializedName('companyName')]

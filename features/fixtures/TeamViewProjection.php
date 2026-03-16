@@ -2,18 +2,26 @@
 
 declare(strict_types=1);
 
-namespace GryfOSS\Mvc\Tests\Behat\Fixtures;
+namespace IDCT\Mvc\Tests\Behat\Fixtures;
 
-use GryfOSS\Mvc\Model\ViewModelInterface;
+use IDCT\Mvc\Model\NormalizableInterface;
+use IDCT\Mvc\Model\ViewProjectionInterface;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 
 /**
- * View model for Team that shows team info and member collection
+ * View projection for Team that shows team info and member collection
  */
-class TeamViewModel implements ViewModelInterface
+class TeamViewProjection implements ViewProjectionInterface
 {
-    public function __construct(private Team $team)
+    private Team $team;
+
+    public function __construct(NormalizableInterface $source)
     {
+        if (!$source instanceof Team) {
+            throw new \InvalidArgumentException('TeamViewProjection expects an instance of ' . Team::class . '.');
+        }
+
+        $this->team = $source;
     }
 
     #[SerializedName('teamName')]

@@ -2,26 +2,26 @@
 
 declare(strict_types=1);
 
-namespace GryfOSS\Mvc\Tests\Unit\Model;
+namespace IDCT\Mvc\Tests\Unit\Model;
 
-use GryfOSS\Mvc\Model\CacheableViewModelInterface;
+use IDCT\Mvc\Model\CacheableViewProjectionInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Tests for CacheableViewModelInterface
+ * Tests for CacheableViewProjectionInterface
  * @coversNothing
  */
-class CacheableViewModelInterfaceTest extends TestCase
+class CacheableViewProjectionInterfaceTest extends TestCase
 {
     public function testInterfaceExists(): void
     {
-        $this->assertTrue(interface_exists(CacheableViewModelInterface::class));
+        $this->assertTrue(interface_exists(CacheableViewProjectionInterface::class));
     }
 
     public function testExtendsNormalizerInterface(): void
     {
-        $reflection = new \ReflectionClass(CacheableViewModelInterface::class);
+        $reflection = new \ReflectionClass(CacheableViewProjectionInterface::class);
         $interfaces = $reflection->getInterfaceNames();
 
         $this->assertContains(NormalizerInterface::class, $interfaces);
@@ -29,14 +29,42 @@ class CacheableViewModelInterfaceTest extends TestCase
 
     public function testCanBeImplemented(): void
     {
-        $implementation = new class implements CacheableViewModelInterface {
+        $implementation = new class implements CacheableViewProjectionInterface {
             public function getCacheKey(): string
             {
                 return 'test-cache-key';
             }
 
+            /**
+             * @param array<string, mixed> $context
+             * @return array<string, mixed>|string|int|float|bool|\ArrayObject<int|string, mixed>|null
+             */
             public function normalize(mixed $object, ?string $format = null, array $context = []): array|string|int|float|bool|\ArrayObject|null
             {
+                if ($object instanceof \ArrayObject) {
+                    return $object;
+                }
+
+                if ($object === null) {
+                    return null;
+                }
+
+                if (is_bool($object)) {
+                    return $object;
+                }
+
+                if (is_int($object)) {
+                    return $object;
+                }
+
+                if (is_float($object)) {
+                    return $object;
+                }
+
+                if (is_string($object)) {
+                    return $object;
+                }
+
                 return ['test' => 'data'];
             }
 
@@ -51,13 +79,13 @@ class CacheableViewModelInterfaceTest extends TestCase
             }
         };
 
-        $this->assertInstanceOf(CacheableViewModelInterface::class, $implementation);
+        $this->assertInstanceOf(CacheableViewProjectionInterface::class, $implementation);
         $this->assertSame('test-cache-key', $implementation->getCacheKey());
     }
 
     public function testGetCacheKeyMethod(): void
     {
-        $reflection = new \ReflectionClass(CacheableViewModelInterface::class);
+        $reflection = new \ReflectionClass(CacheableViewProjectionInterface::class);
 
         $this->assertTrue($reflection->hasMethod('getCacheKey'));
 
